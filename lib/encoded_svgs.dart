@@ -1,0 +1,24 @@
+import 'package:dynamic_ui/svg_icons/bed.dart';
+import 'package:dynamic_ui/svg_icons/cabinet.dart';
+import 'package:dynamic_ui/svg_icons/chair.dart';
+import 'package:dynamic_ui/svg_icons/dining.dart';
+import 'package:dynamic_ui/svg_icons/discount.dart';
+import 'package:dynamic_ui/svg_icons/sbi.dart';
+import 'package:dynamic_ui/svg_icons/sofa.dart';
+import 'package:dynamic_ui/svg_icons/storage.dart';
+import 'package:dynamic_ui/svg_icons/study.dart';
+import 'package:dynamic_ui/svg_icons/svg_icons.dart';
+import 'package:dynamic_ui/svg_icons/table.dart';
+
+final encodedRecycle = Uri.encodeComponent(recycle);
+final encodedBox = Uri.encodeComponent(box);
+final encodedTable = Uri.encodeComponent(table);
+final encodedChair = Uri.encodeComponent(chair);
+final encodedbed = Uri.encodeComponent(bed);
+final encodedstorage = Uri.encodeComponent(storage);
+final encodeddining = Uri.encodeComponent(dining);
+final encodedStudy = Uri.encodeComponent(study);
+final encodedSofa = Uri.encodeComponent(sofa);
+final encodedDsicount = Uri.encodeComponent(discount);
+final encodedCabinet = Uri.encodeComponent(cabinet);
+final encodedSbi = Uri.encodeComponent(sbi);

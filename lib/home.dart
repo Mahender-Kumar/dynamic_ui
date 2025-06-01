@@ -1,15 +1,6 @@
+import 'package:dynamic_ui/encoded_svgs.dart';
+import 'package:dynamic_ui/images/banner_images.dart';
 import 'package:dynamic_ui/images/chair_images.dart';
-import 'package:dynamic_ui/svg_icons/cabinet.dart';
-import 'package:dynamic_ui/svg_icons/bed.dart';
-import 'package:dynamic_ui/svg_icons/chair.dart';
-import 'package:dynamic_ui/svg_icons/dining.dart';
-import 'package:dynamic_ui/svg_icons/discount.dart';
-import 'package:dynamic_ui/svg_icons/sbi.dart';
-import 'package:dynamic_ui/svg_icons/sofa.dart';
-import 'package:dynamic_ui/svg_icons/storage.dart';
-import 'package:dynamic_ui/svg_icons/study.dart';
-import 'package:dynamic_ui/svg_icons/svg_icons.dart';
-import 'package:dynamic_ui/svg_icons/table.dart';
 import 'package:flutter/material.dart';
 import 'package:rfw/rfw.dart';
 import 'widget_factory.dart';
@@ -26,7 +17,7 @@ class Home extends StatelessWidget {
 
     widget root = SingleChildScrollView(child: Column(
       children: [
-        BannerSlider(urls:["$banner1","$banner2","$banner3"]),
+        BannerSlider(urls:["$banner1","$banner2","$banner3","$banner4","$banner5","$banner6"]),
 
            Padding(padding: 8.0,child:
 
@@ -170,32 +161,3 @@ class Home extends StatelessWidget {
 }
 
 // ···
-final encodedRecycle = Uri.encodeComponent(recycle);
-final encodedBox = Uri.encodeComponent(box);
-final encodedTable = Uri.encodeComponent(table);
-final encodedChair = Uri.encodeComponent(chair);
-final encodedbed = Uri.encodeComponent(bed);
-final encodedstorage = Uri.encodeComponent(storage);
-final encodeddining = Uri.encodeComponent(dining);
-final encodedStudy = Uri.encodeComponent(study);
-final encodedSofa = Uri.encodeComponent(sofa);
-final encodedDsicount = Uri.encodeComponent(discount);
-final encodedCabinet = Uri.encodeComponent(cabinet);
-final encodedSbi = Uri.encodeComponent(sbi);
-
-final banner1 =
-    'https://www.shutterstock.com/image-illustration/outdoor-concept-sale-home-decorations-260nw-2213849247.jpg';
-final banner2 =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6oVGpf35fMz2xlXbIz9NCiGKkPVecPd2y7A&s';
-
-final banner3 =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTdeRoYNdKO6kv1gG4Bn2NsNgfjzUsYyLfdQ&s';
-
-final banner4 =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYHZynyLKNQv2zgPNlPJzI2qWtFaSI8XjBREadSXfH1ZMwMVPMFFsq5jH9VbRFRz6q8sQ&usqp=CAU';
-
-final banner5 =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4KAdVkkeqM9KlNfLBZLiKl8wPHHhk-wyNZw&s';
-
-final banner6 =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR89Itkd1s4k006ncFd_cpAVMfUaE7UXWz0rQ&s';
