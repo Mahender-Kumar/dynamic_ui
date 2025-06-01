@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:dynamic_ui/home.dart';
+import 'package:dynamic_ui/svg_icons/svg_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
 
@@ -56,17 +61,24 @@ class WidgetFactory {
       },
 
       'CategoryIcon': (context, source) {
+        final iconName = source.v<String>(['icon']) ?? recycle;
+
         // print(source.v<String>(['icon']));
         return Column(
           // mainAxisSize: MainAxisSize.min,
           // crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 12,
           children: [
-            Icon(
-              iconMap[source.v<String>(['icon'])] ?? Icons.abc,
-              size: 30,
-            ), // can be dynamic
-            Text(source.v<String>(['label']) ?? ''),
+            SvgPicture.string(
+              Uri.decodeComponent(iconName),
+              colorMapper: const _MyColorMapper(),
+              height: 40,
+              width: 40,
+            ),
+            Text(
+              source.v<String>(['label']) ?? '',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
           ],
         );
       },
@@ -96,20 +108,25 @@ class WidgetFactory {
         );
       },
       'OfferCard': (context, source) {
+        final svgString = source.v<String>(['icon']);
+        print('svgString $svgString');
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4), // Set your desired radius
             color: Colors.yellow.shade100,
           ),
           constraints: BoxConstraints(
-            maxWidth: 200, // optional: set max height
+            maxWidth: 240, // optional: set max height
           ),
 
           child: ListTile(
-            leading: Icon(
-              iconMap[source.v<String>(['icon'])] ?? Icons.announcement,
-              size: 24,
-            ),
+            leading: svgString != null
+                ? SvgPicture.string(
+                    Uri.decodeComponent(svgString),
+                    colorMapper: const _MyColorMapper(),
+                    height: 40,
+                  )
+                : null,
             title: Text(
               source.v<String>(['text']) ?? '',
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -119,7 +136,7 @@ class WidgetFactory {
               ),
             ),
             subtitle: Text(
-              source.v<String>(['text']) ?? '',
+              source.v<String>(['subTitle']) ?? '',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 overflow: TextOverflow.ellipsis,
@@ -252,6 +269,8 @@ class WidgetFactory {
       },
 
       'TypeCard': (context, source) {
+        final iconName = source.v<String>(['icon']) ?? recycle;
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
@@ -259,9 +278,11 @@ class WidgetFactory {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  iconMap[source.v<String>(['icon'])] ?? Icons.help,
-                  size: 40,
+                SvgPicture.string(
+                  Uri.decodeComponent(iconName),
+                  colorMapper: const _MyColorMapper(),
+                  height: 40,
+                  width: 40,
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -294,6 +315,34 @@ class WidgetFactory {
         } else {
           return const Icon(Icons.help, size: 24);
         }
+      },
+      'Svg': (context, source) {
+        final iconName = source.v<String>(['icon']) ?? recycle;
+        return SvgPicture.string(
+          Uri.decodeComponent(iconName),
+          colorMapper: const _MyColorMapper(),
+        );
+      },
+      'GridViewBuilder': (context, source) {
+        final crossAxisCount = source.v<int>(['crossAxisCount']) ?? 2;
+        final spacing = source.v<double>(['spacing']) ?? 8.0;
+        final itemCount = source.v<int>(['itemCount']) ?? 0;
+        final children = source.childList(['children']);
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: spacing,
+            mainAxisSpacing: spacing,
+          ),
+
+          itemCount: itemCount.clamp(0, children.length),
+          itemBuilder: (context, index) {
+            return children[index];
+          },
+        );
       },
     });
   }
@@ -342,4 +391,24 @@ class WidgetFactory {
     'kitchen': Icons.kitchen,
     'chair': Icons.chair,
   };
+}
+
+class _MyColorMapper extends ColorMapper {
+  const _MyColorMapper();
+
+  @override
+  Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    Color color,
+  ) {
+    if (color == const Color(0xFFFF0000)) {
+      return Colors.blue;
+    }
+    if (color == const Color(0xFF00FF00)) {
+      return Colors.yellow;
+    }
+    return color;
+  }
 }
