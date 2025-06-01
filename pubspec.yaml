@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   rfw: ^1.0.31
   flutter_svg: ^2.1.0
+  video_player: ^2.9.5
 
 dev_dependencies:
   flutter_test:

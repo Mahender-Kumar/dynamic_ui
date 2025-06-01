@@ -1,9 +1,11 @@
-import 'dart:convert';
-
-import 'package:dynamic_ui/home.dart';
+import 'package:dynamic_ui/widgets/auto_banner_slider.dart';
+import 'package:dynamic_ui/widgets/product_card.dart';
+import 'package:dynamic_ui/widgets/category_icon.dart';
 import 'package:dynamic_ui/svg_icons/svg_icons.dart';
+import 'package:dynamic_ui/widgets/offer_card.dart';
+import 'package:dynamic_ui/widgets/svg_image.dart';
+import 'package:dynamic_ui/widgets/banner_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
 
@@ -28,68 +30,19 @@ class WidgetFactory {
 
   static WidgetLibrary _createLocalWidgets() {
     return LocalWidgetLibrary(<String, LocalWidgetBuilder>{
-      'GreenBox': (context, source) => ColoredBox(
-        color: const Color.fromARGB(255, 34, 22, 0),
-        child: source.child(<Object>['child']),
-      ),
-      'Hello': (context, source) => Center(
-        child: Text(
-          'Hello, ${(source.v<String>(<Object>["name"]) ?? 'World')}!',
-          style: const TextStyle(color: Colors.white, fontSize: 24),
-          textDirection: TextDirection.ltr,
-        ),
-      ),
       'BannerImage': (context, source) {
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                16,
-              ), // Set your desired radius
-              image: DecorationImage(
-                image: NetworkImage((source.v<String>(['url'])) ?? ''),
-                fit: BoxFit.cover,
-              ),
-            ),
-            constraints: BoxConstraints(
-              maxHeight: 200, // optional: set max height
-              maxWidth: double.infinity, // optional: set max width
-            ),
-          ),
-        );
+        final url = source.v<String>(['url']);
+        return BannerImage(url: url);
       },
 
       'CategoryIcon': (context, source) {
         final iconName = source.v<String>(['icon']) ?? recycle;
-
+        final label = source.v<String>(['label']) ?? '';
         // print(source.v<String>(['icon']));
-        return Column(
-          // mainAxisSize: MainAxisSize.min,
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 12,
-          children: [
-            SvgPicture.string(
-              Uri.decodeComponent(iconName),
-              colorMapper: const _MyColorMapper(),
-              height: 40,
-              width: 40,
-            ),
-            Text(
-              source.v<String>(['label']) ?? '',
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ],
-        );
+        return CategoryIcon(icon: iconName, label: label);
       },
       'Column': (context, source) {
-        return SingleChildScrollView(
-          child: Column(
-            // mainAxisSize: MainAxisSize.min,
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            children: source.childList(['children']), // ✅ This now works
-          ),
-        );
+        return Column(children: source.childList(['children']));
       },
       'Row': (context, source) {
         final spacing =
@@ -97,7 +50,7 @@ class WidgetFactory {
         return Row(
           mainAxisSize: MainAxisSize.min,
           spacing: spacing,
-          children: source.childList(['children']), // ✅ This now works
+          children: source.childList(['children']),
         );
       },
       'Padding': (context, source) {
@@ -109,41 +62,13 @@ class WidgetFactory {
       },
       'OfferCard': (context, source) {
         final svgString = source.v<String>(['icon']);
-        print('svgString $svgString');
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4), // Set your desired radius
-            color: Colors.yellow.shade100,
-          ),
-          constraints: BoxConstraints(
-            maxWidth: 240, // optional: set max height
-          ),
-
-          child: ListTile(
-            leading: svgString != null
-                ? SvgPicture.string(
-                    Uri.decodeComponent(svgString),
-                    colorMapper: const _MyColorMapper(),
-                    height: 40,
-                  )
-                : null,
-            title: Text(
-              source.v<String>(['text']) ?? '',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            subtitle: Text(
-              source.v<String>(['subTitle']) ?? '',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                overflow: TextOverflow.ellipsis,
-                color: Colors.black87,
-              ),
-            ),
-          ),
+        final title = source.v<String>(['text']) ?? '';
+        final subTitle = source.v<String>(['subTitle']) ?? '';
+        // print('svgString $svgString');
+        return OfferCard(
+          svgString: svgString,
+          title: title,
+          subTtitle: subTitle,
         );
       },
       'SingleChildScrollView': (context, source) {
@@ -155,54 +80,16 @@ class WidgetFactory {
         );
       },
       'ProductCard': (context, source) {
-        return SizedBox(
-          width: 120,
-          child: Column(
-            spacing: 8,
-            mainAxisSize: MainAxisSize.min,
-            // crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.network(
-                (source.v<String>(['image']) ?? ''),
-                height: 160,
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  (source.v<String>(['title']) ?? ''),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
+        final image = source.v<String>(['image']);
+        final title = source.v<String>(['title']) ?? '';
+        final price = source.v<String>(['price']) ?? '';
+        final color = source.v<String>(['color']);
 
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(
-                          int.parse(
-                            source.v<String>(['color']) ?? '0xFF000000',
-                          ),
-                        ),
-                      ),
-
-                      constraints: BoxConstraints(minHeight: 32),
-                      child: Text(
-                        source.v<String>(['price']) ?? '',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+        return ProductCard(
+          image: image,
+          title: title,
+          price: price,
+          color: color,
         );
       },
       'Text': (context, source) {
@@ -270,43 +157,9 @@ class WidgetFactory {
 
       'TypeCard': (context, source) {
         final iconName = source.v<String>(['icon']) ?? recycle;
+        final title = source.v<String>(['title']) ?? '';
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.string(
-                  Uri.decodeComponent(iconName),
-                  colorMapper: const _MyColorMapper(),
-                  height: 40,
-                  width: 40,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'BUY',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
-                ),
-
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  title: Text(
-                    source.v<String>(['title']) ?? '',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  trailing: Icon(Icons.arrow_forward, size: 16),
-                ),
-              ],
-            ),
-          ),
-        );
+        return TypeCard(iconName: iconName, title: title);
       },
       'icon': (context, source) {
         final iconName = source.v<String>(['name']);
@@ -318,10 +171,7 @@ class WidgetFactory {
       },
       'Svg': (context, source) {
         final iconName = source.v<String>(['icon']) ?? recycle;
-        return SvgPicture.string(
-          Uri.decodeComponent(iconName),
-          colorMapper: const _MyColorMapper(),
-        );
+        return SvgImage(icon: iconName);
       },
       'GridViewBuilder': (context, source) {
         final crossAxisCount = source.v<int>(['crossAxisCount']) ?? 2;
@@ -343,6 +193,16 @@ class WidgetFactory {
             return children[index];
           },
         );
+      },
+      'BannerSlider': (context, source) {
+        if (source.isList(['urls'])) {
+          final length = source.length(['urls']);
+          final banners = List.generate(length, (index) {
+            return source.v<String>(['urls', index]);
+          }).whereType<String>().toList();
+          return AutoBannerSlider(urls: banners);
+        }
+        return SizedBox.shrink();
       },
     });
   }
@@ -393,22 +253,44 @@ class WidgetFactory {
   };
 }
 
-class _MyColorMapper extends ColorMapper {
-  const _MyColorMapper();
+class TypeCard extends StatelessWidget {
+  const TypeCard({super.key, required this.iconName, required this.title});
+
+  final String iconName;
+  final String title;
 
   @override
-  Color substitute(
-    String? id,
-    String elementName,
-    String attributeName,
-    Color color,
-  ) {
-    if (color == const Color(0xFFFF0000)) {
-      return Colors.blue;
-    }
-    if (color == const Color(0xFF00FF00)) {
-      return Colors.yellow;
-    }
-    return color;
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SvgImage(icon: iconName, height: 40, width: 40),
+            const SizedBox(height: 8),
+            Text(
+              'BUY',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              title: Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              trailing: Icon(Icons.arrow_forward, size: 16),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
