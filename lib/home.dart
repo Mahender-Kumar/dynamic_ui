@@ -1,4 +1,4 @@
-import 'package:dynamic_ui/chair_images.dart';
+import 'package:dynamic_ui/images/chair_images.dart';
 import 'package:dynamic_ui/svg_icons/cabinet.dart';
 import 'package:dynamic_ui/svg_icons/bed.dart';
 import 'package:dynamic_ui/svg_icons/chair.dart';
