@@ -4,17 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class AutoVideoBanner extends StatefulWidget {
+  final List<String> videoUrls;
+  const AutoVideoBanner({super.key, required this.videoUrls});
   @override
   _AutoVideoBannerState createState() => _AutoVideoBannerState();
 }
 
 class _AutoVideoBannerState extends State<AutoVideoBanner> {
-  final List<String> _videoUrls = [
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-  ];
-
   // Cache for all controllers
   final Map<int, VideoPlayerController> _controllerCache = {};
   final Map<int, bool> _initializationStatus = {};
@@ -25,23 +21,40 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
   Timer? _autoChangeTimer;
   bool _isDisposed = false;
   bool _isChangingVideo = false;
+  bool _isInitializing = false;
 
   @override
   void initState() {
     super.initState();
-    _preloadVideos();
+    _initializeAllVideos();
   }
 
-  Future<void> _preloadVideos() async {
-    // Start with current video
-    await _loadVideo(_currentIndex);
-    _setCurrentVideo();
+  /// Initialize all videos at once for smooth playback
+  Future<void> _initializeAllVideos() async {
+    if (_isDisposed) return;
 
-    // Preload next and previous videos in background
-    _preloadAdjacentVideos();
+    _isInitializing = true;
+
+    // Initialize all videos concurrently
+    final List<Future<void>> initializationFutures = [];
+
+    for (int i = 0; i < widget.videoUrls.length; i++) {
+      initializationFutures.add(_initializeVideo(i));
+    }
+
+    // Wait for all videos to initialize (or fail)
+    await Future.wait(initializationFutures);
+
+    _isInitializing = false;
+
+    // Start playing the first video once all are initialized
+    if (!_isDisposed && mounted) {
+      _setCurrentVideo();
+      setState(() {});
+    }
   }
 
-  Future<void> _loadVideo(int index) async {
+  Future<void> _initializeVideo(int index) async {
     if (_controllerCache.containsKey(index) || _isDisposed) return;
 
     try {
@@ -49,7 +62,7 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
       _errorStatus[index] = false;
 
       final controller = VideoPlayerController.networkUrl(
-        Uri.parse(_videoUrls[index]),
+        Uri.parse(widget.videoUrls[index]),
       );
 
       _controllerCache[index] = controller;
@@ -61,45 +74,42 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
       await controller.initialize();
 
       if (!_isDisposed && mounted) {
+        // Configure video settings
         controller.setLooping(false);
         controller.setVolume(0.5);
 
-        _initializationStatus[index] = true;
-        print('Video $index cached successfully');
-
-        // If this is the current video and we're ready, start playing
-        if (index == _currentIndex && _currentController == controller) {
-          _playCurrentVideo();
+        // Ensure video is paused initially (only current video should play)
+        if (index != _currentIndex) {
+          controller.pause();
         }
+
+        _initializationStatus[index] = true;
+        print('Video $index initialized successfully');
       }
     } catch (e) {
-      print('Error caching video $index: $e');
+      print('Error initializing video $index: $e');
       if (!_isDisposed && mounted) {
         _errorStatus[index] = true;
+        _initializationStatus[index] = false;
       }
-    }
-  }
-
-  void _preloadAdjacentVideos() {
-    // Preload next video
-    final nextIndex = (_currentIndex + 1) % _videoUrls.length;
-    if (!_controllerCache.containsKey(nextIndex)) {
-      _loadVideo(nextIndex);
-    }
-
-    // Preload previous video
-    final prevIndex =
-        (_currentIndex - 1 + _videoUrls.length) % _videoUrls.length;
-    if (!_controllerCache.containsKey(prevIndex)) {
-      _loadVideo(prevIndex);
     }
   }
 
   void _setCurrentVideo() {
+    if (_isDisposed) return;
+
     _currentController = _controllerCache[_currentIndex];
+
     if (_currentController != null &&
         _initializationStatus[_currentIndex] == true) {
       _playCurrentVideo();
+    } else if (_errorStatus[_currentIndex] == true) {
+      // Auto-skip to next video if current has error
+      Future.delayed(Duration(seconds: 1), () {
+        if (!_isDisposed && mounted) {
+          _moveToNextVideo();
+        }
+      });
     }
   }
 
@@ -124,7 +134,7 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
           _errorStatus[index] = true;
         });
         // Auto-skip to next video after error
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(Duration(seconds: 1), () {
           if (!_isDisposed && mounted) {
             _moveToNextVideo();
           }
@@ -134,25 +144,27 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
   }
 
   void _playCurrentVideo() {
-    if (_currentController != null &&
-        _initializationStatus[_currentIndex] == true) {
-      // Pause all other videos
-      _pauseAllOtherVideos();
-
-      // Reset and play current video
-      _currentController!.seekTo(Duration.zero);
-      _currentController!.play();
-
-      // Start auto-change timer
-      _startAutoChangeTimer();
-
-      print('Playing video $_currentIndex');
+    if (_currentController == null ||
+        _initializationStatus[_currentIndex] != true) {
+      return;
     }
+
+    // Pause ALL other videos first
+    _pauseAllOtherVideos();
+
+    // Reset current video to beginning and play
+    _currentController!.seekTo(Duration.zero);
+    _currentController!.play();
+
+    // Start auto-change timer based on video duration
+    _startAutoChangeTimer();
+
+    print('Playing video $_currentIndex');
   }
 
   void _pauseAllOtherVideos() {
     _controllerCache.forEach((index, controller) {
-      if (index != _currentIndex && controller.value.isPlaying) {
+      if (index != _currentIndex) {
         controller.pause();
       }
     });
@@ -170,7 +182,7 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
           }
         });
       } else {
-        // Fallback timer
+        // Fallback timer for videos without clear duration
         _autoChangeTimer = Timer(Duration(seconds: 10), () {
           if (!_isDisposed && mounted) {
             _moveToNextVideo();
@@ -181,72 +193,44 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
   }
 
   void _moveToNextVideo() {
-    if (_isDisposed || _isChangingVideo) return;
-
-    _isChangingVideo = true;
-    _autoChangeTimer?.cancel();
-
-    setState(() {
-      _currentIndex = (_currentIndex + 1) % _videoUrls.length;
-    });
-
-    _changeToVideo(_currentIndex);
+    _changeVideo((_currentIndex + 1) % widget.videoUrls.length);
   }
 
   void _moveToPreviousVideo() {
+    _changeVideo(
+      (_currentIndex - 1 + widget.videoUrls.length) % widget.videoUrls.length,
+    );
+  }
+
+  void _jumpToVideo(int index) {
+    if (index == _currentIndex) return;
+    _changeVideo(index);
+  }
+
+  void _changeVideo(int newIndex) {
     if (_isDisposed || _isChangingVideo) return;
 
     _isChangingVideo = true;
     _autoChangeTimer?.cancel();
 
-    setState(() {
-      _currentIndex =
-          (_currentIndex - 1 + _videoUrls.length) % _videoUrls.length;
-    });
-
-    _changeToVideo(_currentIndex);
-  }
-
-  void _jumpToVideo(int index) {
-    if (_isDisposed || index == _currentIndex || _isChangingVideo) return;
-
-    _isChangingVideo = true;
-    _autoChangeTimer?.cancel();
-
-    setState(() {
-      _currentIndex = index;
-    });
-
-    _changeToVideo(index);
-  }
-
-  Future<void> _changeToVideo(int index) async {
-    // If video is already cached, switch immediately
-    if (_controllerCache.containsKey(index) &&
-        _initializationStatus[index] == true) {
-      _setCurrentVideo();
-      _isChangingVideo = false;
-
-      // Preload adjacent videos for smooth navigation
-      _preloadAdjacentVideos();
-    } else {
-      // Load the video if not cached
-      await _loadVideo(index);
-      _setCurrentVideo();
-      _isChangingVideo = false;
-
-      // Preload adjacent videos
-      _preloadAdjacentVideos();
+    // Pause current video immediately
+    if (_currentController != null) {
+      _currentController!.pause();
     }
 
-    if (mounted) setState(() {});
+    setState(() {
+      _currentIndex = newIndex;
+    });
+
+    // Set new current video and play
+    _setCurrentVideo();
+
+    _isChangingVideo = false;
   }
 
   Widget _buildIndicator(int index) {
     bool isActive = index == _currentIndex;
-    bool isCached =
-        _controllerCache.containsKey(index) &&
-        _initializationStatus[index] == true;
+    bool isInitialized = _initializationStatus[index] == true;
     bool hasError = _errorStatus[index] == true;
 
     Color color;
@@ -254,10 +238,10 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
       color = Colors.red;
     } else if (isActive) {
       color = Colors.blue;
-    } else if (isCached) {
-      color = Colors.green.shade300; // Green indicates cached
+    } else if (isInitialized) {
+      color = Colors.green.shade300; // Green indicates ready
     } else {
-      color = Colors.grey.shade400;
+      color = Colors.grey.shade400; // Still loading
     }
 
     return GestureDetector(
@@ -278,7 +262,6 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
   Widget _buildVideoPlayer() {
     final hasError = _errorStatus[_currentIndex] == true;
     final isInitialized = _initializationStatus[_currentIndex] == true;
-    final isCached = _controllerCache.containsKey(_currentIndex);
 
     if (hasError) {
       return Container(
@@ -304,7 +287,7 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
       );
     }
 
-    if (!isCached || !isInitialized || _currentController == null) {
+    if (!isInitialized || _currentController == null || _isInitializing) {
       return Container(
         height: 200,
         width: double.infinity,
@@ -314,7 +297,11 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading video ${_currentIndex + 1}...'),
+            Text(
+              _isInitializing
+                  ? 'Initializing videos...'
+                  : 'Loading video ${_currentIndex + 1}...',
+            ),
           ],
         ),
       );
@@ -355,6 +342,8 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
       controller.dispose();
     });
     _controllerCache.clear();
+    _initializationStatus.clear();
+    _errorStatus.clear();
 
     super.dispose();
   }
@@ -365,42 +354,26 @@ class _AutoVideoBannerState extends State<AutoVideoBanner> {
       children: [
         _buildVideoPlayer(),
         SizedBox(height: 12),
-        // Progress indicators (green = cached, blue = current, grey = not loaded)
+        // Progress indicators (green = ready, blue = current, red = error, grey = loading)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_videoUrls.length, _buildIndicator),
+          children: List.generate(widget.videoUrls.length, _buildIndicator),
         ),
-        // SizedBox(height: 8),
-        // // Video info and controls
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Text(
-        //       'Video ${_currentIndex + 1} of ${_videoUrls.length}',
-        //       style: TextStyle(fontSize: 12, color: Colors.grey),
-        //     ),
-        //     Row(
-        //       children: [
-        //         IconButton(
-        //           onPressed: _moveToPreviousVideo,
-        //           icon: Icon(Icons.skip_previous),
-        //           iconSize: 20,
-        //         ),
-        //         IconButton(
-        //           onPressed: _moveToNextVideo,
-        //           icon: Icon(Icons.skip_next),
-        //           iconSize: 20,
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
-        // Cache status
-        SizedBox(height: 4),
+        SizedBox(height: 8),
+        // Video counter
         // Text(
-        //   'Cached: ${_controllerCache.length}/${_videoUrls.length} videos',
-        //   style: TextStyle(fontSize: 10, color: Colors.grey),
+        //   'Video ${_currentIndex + 1} of ${widget.videoUrls.length}',
+        //   style: TextStyle(fontSize: 12, color: Colors.grey),
         // ),
+        // // Initialization status
+        // if (_isInitializing)
+        //   Padding(
+        //     padding: const EdgeInsets.only(top: 4),
+        //     child: Text(
+        //       'Initializing ${_initializationStatus.values.where((v) => v).length}/${widget.videoUrls.length} videos',
+        //       style: TextStyle(fontSize: 10, color: Colors.grey),
+        //     ),
+        //   ),
       ],
     );
   }

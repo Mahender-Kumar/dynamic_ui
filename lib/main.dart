@@ -1,4 +1,4 @@
-import 'package:dynamic_ui/home.dart';
+import 'package:dynamic_ui/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,13 +10,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Dynamic UI',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Home(),
+      routerConfig: AppRouter.router,
+      // home: Home(),
     );
   }
 }

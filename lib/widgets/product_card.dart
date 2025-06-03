@@ -5,11 +5,17 @@ class ProductCard extends StatelessWidget {
   final String? title;
   final String? price;
   final String? color;
-  const ProductCard({super.key, this.image, this.title, this.price, this.color});
+  const ProductCard({
+    super.key,
+    this.image,
+    this.title,
+    this.price,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (image == null || image=='') {
+    if (image == null || image == '') {
       return const SizedBox.shrink();
     }
     return SizedBox(
@@ -32,12 +38,14 @@ class ProductCard extends StatelessWidget {
           ),
 
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Color(int.parse(color ?? '0xFF000000')),
+                    color: Color(int.parse(color ?? '0xFFFFF9C4')),
                   ),
+                  alignment: Alignment.center,
 
                   constraints: BoxConstraints(minHeight: 32),
                   child: Text(
@@ -45,6 +53,7 @@ class ProductCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),

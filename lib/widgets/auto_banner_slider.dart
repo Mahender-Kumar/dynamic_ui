@@ -112,6 +112,7 @@ class _AutoBannerSliderState extends State<AutoBannerSlider> {
                 return Image.network(
                   widget.urls[index],
                   fit: BoxFit.cover,
+
                   loadingBuilder: (context, child, progress) {
                     if (progress == null) return child;
                     return Center(child: CircularProgressIndicator());

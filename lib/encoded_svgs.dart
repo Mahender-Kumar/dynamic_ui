@@ -1,14 +1,14 @@
-import 'package:dynamic_ui/svg_icons/bed.dart';
-import 'package:dynamic_ui/svg_icons/cabinet.dart';
-import 'package:dynamic_ui/svg_icons/chair.dart';
-import 'package:dynamic_ui/svg_icons/dining.dart';
-import 'package:dynamic_ui/svg_icons/discount.dart';
-import 'package:dynamic_ui/svg_icons/sbi.dart';
-import 'package:dynamic_ui/svg_icons/sofa.dart';
-import 'package:dynamic_ui/svg_icons/storage.dart';
-import 'package:dynamic_ui/svg_icons/study.dart';
-import 'package:dynamic_ui/svg_icons/svg_icons.dart';
-import 'package:dynamic_ui/svg_icons/table.dart';
+import 'package:dynamic_ui/svgs/bed.dart';
+import 'package:dynamic_ui/svgs/cabinet.dart';
+import 'package:dynamic_ui/svgs/chair.dart';
+import 'package:dynamic_ui/svgs/dining.dart';
+import 'package:dynamic_ui/svgs/discount.dart';
+import 'package:dynamic_ui/svgs/sbi.dart';
+import 'package:dynamic_ui/svgs/sofa.dart';
+import 'package:dynamic_ui/svgs/storage.dart';
+import 'package:dynamic_ui/svgs/study.dart';
+import 'package:dynamic_ui/svgs/svg_icons.dart';
+import 'package:dynamic_ui/svgs/table.dart';
 
 final encodedRecycle = Uri.encodeComponent(recycle);
 final encodedBox = Uri.encodeComponent(box);

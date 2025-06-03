@@ -1,7 +1,7 @@
 import 'package:dynamic_ui/ui_config.dart';
 import 'package:flutter/material.dart';
 import 'package:rfw/rfw.dart'; 
-import '../widget_factory.dart';
+import '../widget_factory/widget_factory.dart';
 
 class JsonUiParser {
   static Widget parse(UIConfig config) {

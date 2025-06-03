@@ -1,10 +1,12 @@
 import 'package:dynamic_ui/widgets/auto_banner_slider.dart';
+import 'package:dynamic_ui/widgets/auto_video_player.dart';
 import 'package:dynamic_ui/widgets/product_card.dart';
 import 'package:dynamic_ui/widgets/category_icon.dart';
-import 'package:dynamic_ui/svg_icons/svg_icons.dart';
+import 'package:dynamic_ui/svgs/svg_icons.dart';
 import 'package:dynamic_ui/widgets/offer_card.dart';
 import 'package:dynamic_ui/widgets/svg_image.dart';
 import 'package:dynamic_ui/widgets/banner_image.dart';
+import 'package:dynamic_ui/widgets/type_card.dart';
 import 'package:flutter/material.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
@@ -38,8 +40,14 @@ class WidgetFactory {
       'CategoryIcon': (context, source) {
         final iconName = source.v<String>(['icon']) ?? recycle;
         final label = source.v<String>(['label']) ?? '';
-        // print(source.v<String>(['icon']));
-        return CategoryIcon(icon: iconName, label: label);
+        final onTap =
+            source.voidHandler(['onTap']) ??
+            () {
+              print('clicking on $label');
+            };
+        print('this${source.voidHandler(['onTap'])}');
+
+        return CategoryIcon(icon: iconName, label: label, onTap: onTap);
       },
       'Column': (context, source) {
         return Column(children: source.childList(['children']));
@@ -116,6 +124,11 @@ class WidgetFactory {
         );
       },
       'ListTile': (context, source) {
+        final onTap =
+            source.voidHandler(['onTap']) ??
+            () {
+              debugPrint('ListTile tapped');
+            };
         return ListTile(
           dense: true,
           leading: source.v<String>(['icon']) != null
@@ -131,12 +144,7 @@ class WidgetFactory {
           trailing: Icon(
             iconMap[source.v<String>(['trailingIcon'])] ?? Icons.arrow_forward,
           ),
-          onTap: () {
-            final action = source.v<String>(['action']);
-            if (action != null) {
-              debugPrint('ListTile tapped with action: $action');
-            }
-          },
+          onTap: onTap,
         );
       },
       'TextFormField': (context, source) {
@@ -161,7 +169,7 @@ class WidgetFactory {
 
         return TypeCard(iconName: iconName, title: title);
       },
-      'icon': (context, source) {
+      'Icon': (context, source) {
         final iconName = source.v<String>(['name']);
         if (iconName != null && iconMap.containsKey(iconName)) {
           return Icon(iconMap[iconName], size: 24);
@@ -201,6 +209,16 @@ class WidgetFactory {
             return source.v<String>(['urls', index]);
           }).whereType<String>().toList();
           return AutoBannerSlider(urls: banners);
+        }
+        return SizedBox.shrink();
+      },
+      'VideoSlider': (context, source) {
+        if (source.isList(['urls'])) {
+          final length = source.length(['urls']);
+          final videos = List.generate(length, (index) {
+            return source.v<String>(['urls', index]);
+          }).whereType<String>().toList();
+          return AutoVideoBanner(videoUrls: videos);
         }
         return SizedBox.shrink();
       },
@@ -251,46 +269,4 @@ class WidgetFactory {
     'kitchen': Icons.kitchen,
     'chair': Icons.chair,
   };
-}
-
-class TypeCard extends StatelessWidget {
-  const TypeCard({super.key, required this.iconName, required this.title});
-
-  final String iconName;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SvgImage(icon: iconName, height: 40, width: 40),
-            const SizedBox(height: 8),
-            Text(
-              'BUY',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              title: Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              trailing: Icon(Icons.arrow_forward, size: 16),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
