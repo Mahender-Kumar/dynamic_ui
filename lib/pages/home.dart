@@ -11,129 +11,74 @@ class Home extends StatelessWidget {
 
   final String rfwLayout =
       '''
-    import local;
+import local;
 
-    widget root = SingleChildScrollView(child: Column(
-      children: [
-           Padding(padding: 8.0,child:
-        BannerSlider(urls:["$banner1","$banner2","$banner3","$banner4","$banner5","$banner6"]),
-),
-           Padding(padding: 8.0,child:
-
-        Text(text:"BUY FURNITURE"),),
-
-        SizeBox(height: 8.0),
- 
-   GridViewBuilder(
-          itemCount: 8,
-          crossAxisCount: 4,
-           children:[ 
+widget root = SingleChildScrollView(child: Column(
+  children: [
+    Padding(padding: 8.0,child:
+      BannerSlider(urls:["$banner1","$banner2","$banner3","$banner4","$banner5","$banner6"]),
+    ),
+    Padding(padding: 8.0,child:
+      Text(text:"BUY FURNITURE"),
+    ),
+    SizeBox(height: 8.0),
+    GridViewBuilder(
+      itemCount: 8,
+      crossAxisCount: 4,
+      children:[ 
         CategoryIcon(label: "Dining",icon: "$encodeddining",  onTap: event "category_tap" { "category": "dining", "label": "Dining" }),
-          CategoryIcon(label: "Tables", icon: "$encodedTable",  onTap: event "category_tap" { "category": "table", "label": "Table" }),
-          CategoryIcon(label: "Chairs", icon: "$encodedChair",  onTap: event "category_tap" { "category": "chair", "label": "Chair" }),
-          CategoryIcon(label: "Cabinets", icon: "$encodedCabinet",  onTap: event "category_tap" { "category": "cabinet", "label": "Cabinets" }),
-                 CategoryIcon(label: "Living Room", icon: "$encodedSofa",  onTap: event "category_tap" { "category": "sofa", "label": "Sofa" }),
-          CategoryIcon(label: "Bedroom", icon: "$encodedbed",  onTap: event "category_tap" { "category": "bed", "label": "Bed" }),
-          CategoryIcon(label: "Storage", icon: "$encodedstorage",  onTap: event "category_tap" { "category": "storage", "label": "Storage" }),
-          CategoryIcon(label: "Study", icon: "$encodedStudy",  onTap: event "category_tap" { "category": "study", "label": "Study" }),
-     
-           ],
-        ),
-
-        SizeBox(height: 8.0),
-
-
-
-  ListTile(
-    
-            title:  'Offers & Discounts',
-         onTap: event "listtile_tap" { destination: '/discount' }
-           
-          ),
-         Padding(padding: 8.0,child:          Row( children: [
-       Expanded (child:  TypeCard(
-            icon: "$encodedBox",
-            title: "Brand New",
-             
-          ),  ),       Expanded (child:  TypeCard(
-            icon: "$encodedRecycle",
-            title: "Refurbished",
-             
-          ),),]),),
-        SizeBox(height: 8.0),
-       
-   SingleChildScrollView(scrollDirection:"horizontal",child:    Padding(padding: 8.0,child:       Row(spacing:16,children: [
-           OfferCard(text: "Extra ₹100 off on SBI",subTitle:"No Action Required",icon:"$encodedSbi"),
-          OfferCard(text: "Get flat ₹500 off",subTitle:"Get flat 15 % off",icon:"$encodedDsicount"),
-           OfferCard(text: "Extra ₹100 off on SBI",subTitle:"No Action Required",icon:"$encodedSbi"),
-          OfferCard(text: "Get flat ₹500 off",subTitle:"Get flat 15 % off",icon:"$encodedDsicount"),
-           OfferCard(text: "Extra ₹100 off on SBI",subTitle:"No Action Required",icon:"$encodedSbi"),
-          OfferCard(text: "Get flat ₹500 off",subTitle:"Get flat 15 % off",icon:"$encodedDsicount"),
-        ]),),),
-
-      
-
-
-        SizeBox(height: 8.0),
-   ListTile(
-     icon:"home",
-            title:  'Deals of the Day',
-            subtitle:  'To buy',
-         onTap: event "listtile_tap" { destination: '/deals' }
-
-           
-          ),
-        
-      Padding(padding: 8.0,child:   SingleChildScrollView(scrollDirection:"horizontal",child:    Row(spacing:16,children: [
-          ProductCard(
-            image: "$chairImage1",
-            title: "Flex 3 Seater Magic B...",
-            price: "-72% ₹10,699"
-          ),
-          ProductCard(
-            image: "$chairImage2",
-            title: "Flex Fabric 3...",
-            price: "-74% ₹9,499"
-          ),
-          ProductCard(
-            image: "$chairImage3",
-            title: "Flex Fabric 3...",
-            price: "-74% ₹9,499"
-          ),
-          ProductCard(
-            image: "$chairImage5",
-            title: "Flex Fabric 3...",
-            price: "-74% ₹9,499"
-          ),
-          ProductCard(
-            image: "$chairImage6",
-            title: "Flex Fabric 3...",
-            price: "-74% ₹9,499"
-          ),
-          ProductCard(
-            image: "$chairImage7",
-            title: "Flex Fabric 3...",
-            price: "-74% ₹9,499"
-          ),
-       
-          ProductCard(
-            image: "$chairImage9",
-            title: "Flex Fabric 3...",
-            price: "-74% ₹9,499"
-          ),
-        ]),),),
-
- Padding(padding: 8.0,child: VideoSlider(
-          urls: [
-            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",],)),
-  
-      
+        CategoryIcon(label: "Tables", icon: "$encodedTable",  onTap: event "category_tap" { "category": "table", "label": "Table" }),
+        CategoryIcon(label: "Chairs", icon: "$encodedChair",  onTap: event "category_tap" { "category": "chair", "label": "Chair" }),
+        CategoryIcon(label: "Cabinets", icon: "$encodedCabinet",  onTap: event "category_tap" { "category": "cabinet", "label": "Cabinets" }),
+        CategoryIcon(label: "Living Room", icon: "$encodedSofa",  onTap: event "category_tap" { "category": "sofa", "label": "Sofa" }),
+        CategoryIcon(label: "Bedroom", icon: "$encodedbed",  onTap: event "category_tap" { "category": "bed", "label": "Bed" }),
+        CategoryIcon(label: "Storage", icon: "$encodedstorage",  onTap: event "category_tap" { "category": "storage", "label": "Storage" }),
+        CategoryIcon(label: "Study", icon: "$encodedStudy",  onTap: event "category_tap" { "category": "study", "label": "Study" }),
       ],
-    ),);
-
-
-  ''';
+    ),
+    SizeBox(height: 8.0),
+    ListTile(
+      title:  'Offers & Discounts',
+      onTap: event "listtile_tap" { destination: '/discount' }
+    ),
+    Padding(padding: 8.0,child: Row(children: [
+      Expanded(child: TypeCard(icon: "$encodedBox", title: "Brand New")),
+      Expanded(child: TypeCard(icon: "$encodedRecycle", title: "Refurbished")),
+    ])),
+    SizeBox(height: 8.0),
+    SingleChildScrollView(scrollDirection:"horizontal",child: Padding(padding: 8.0,child: Row(spacing:16,children: [
+      OfferCard(text: "Extra ₹100 off on SBI",subTitle:"No Action Required",icon:"$encodedSbi"),
+      OfferCard(text: "Get flat ₹500 off",subTitle:"Get flat 15 % off",icon:"$encodedDsicount"),
+      OfferCard(text: "Extra ₹100 off on SBI",subTitle:"No Action Required",icon:"$encodedSbi"),
+      OfferCard(text: "Get flat ₹500 off",subTitle:"Get flat 15 % off",icon:"$encodedDsicount"),
+      OfferCard(text: "Extra ₹100 off on SBI",subTitle:"No Action Required",icon:"$encodedSbi"),
+      OfferCard(text: "Get flat ₹500 off",subTitle:"Get flat 15 % off",icon:"$encodedDsicount"),
+    ]))),
+    SizeBox(height: 8.0),
+    ListTile(
+      icon:"home",
+      title:  'Deals of the Day',
+      subtitle:  'To buy',
+      onTap: event "listtile_tap" { destination: '/deals' }
+    ),
+    Padding(padding: 8.0,child: SingleChildScrollView(scrollDirection:"horizontal",child: Row(spacing:16,children: [
+      ProductCard(image: "$chairImage1",title: "Flex 3 Seater Magic B...",price: "-72% ₹10,699"),
+      ProductCard(image: "$chairImage2",title: "Flex Fabric 3...",price: "-74% ₹9,499"),
+      ProductCard(image: "$chairImage3",title: "Flex Fabric 3...",price: "-74% ₹9,499"),
+      ProductCard(image: "$chairImage5",title: "Flex Fabric 3...",price: "-74% ₹9,499"),
+      ProductCard(image: "$chairImage6",title: "Flex Fabric 3...",price: "-74% ₹9,499"),
+      ProductCard(image: "$chairImage7",title: "Flex Fabric 3...",price: "-74% ₹9,499"),
+      ProductCard(image: "$chairImage9",title: "Flex Fabric 3...",price: "-74% ₹9,499"),
+    ]))),
+    Padding(padding: 8.0,child: VideoSlider(
+      urls: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      ]
+    )),
+  ],
+));
+ ''';
 
   @override
   Widget build(BuildContext context) {
