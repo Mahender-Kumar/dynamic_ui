@@ -15,9 +15,7 @@ import local;
 
 widget root = SingleChildScrollView(child: Column(
   children: [
-    Padding(padding: 8.0,child:
-      BannerSlider(urls:["$banner1","$banner2","$banner3","$banner4","$banner5","$banner6"]),
-    ),
+  
     Padding(padding: 8.0,child:
       Text(text:"BUY FURNITURE"),
     ),
@@ -35,6 +33,9 @@ widget root = SingleChildScrollView(child: Column(
         CategoryIcon(label: "Storage", icon: "$encodedstorage",  onTap: event "category_tap" { "category": "storage", "label": "Storage" }),
         CategoryIcon(label: "Study", icon: "$encodedStudy",  onTap: event "category_tap" { "category": "study", "label": "Study" }),
       ],
+    ),
+      Padding(padding: 8.0,child:
+      BannerSlider(urls:["$banner1","$banner2","$banner3","$banner4","$banner5","$banner6"]),
     ),
     SizeBox(height: 8.0),
     ListTile(
@@ -94,21 +95,18 @@ widget root = SingleChildScrollView(child: Column(
             leading: Icon(Icons.location_pin),
           ),
         ),
-        body:
-            // AutoVideoBanner(),
-            // AutoBannerSlider(),
-            RemoteWidget(
-              runtime: runtime,
-              data: DynamicContent(),
-              widget: const FullyQualifiedWidgetName(
-                LibraryName(<String>['remote']),
-                'root',
-              ),
-              onEvent: (name, args) {
-                // print('Event received: $name, args: $args');
-                _handleEvent(context, name, args);
-              },
-            ),
+        body: RemoteWidget(
+          runtime: runtime,
+          data: DynamicContent(),
+          widget: const FullyQualifiedWidgetName(
+            LibraryName(<String>['remote']),
+            'root',
+          ),
+          onEvent: (name, args) {
+            // print('Event received: $name, args: $args');
+            _handleEvent(context, name, args);
+          },
+        ),
       ),
     );
   }
@@ -184,5 +182,3 @@ widget root = SingleChildScrollView(child: Column(
     // Handle banner tap - navigate to promotion page, etc.
   }
 }
-
-// ···
