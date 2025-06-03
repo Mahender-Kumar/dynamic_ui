@@ -160,7 +160,7 @@ class Home extends StatelessWidget {
                 'root',
               ),
               onEvent: (name, args) {
-                print('Event received: $name, args: $args');
+                // print('Event received: $name, args: $args');
                 _handleEvent(context, name, args);
               },
             ),

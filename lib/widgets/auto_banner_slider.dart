@@ -7,10 +7,10 @@ class AutoBannerSlider extends StatefulWidget {
 
   const AutoBannerSlider({super.key, required this.urls});
   @override
-  _AutoBannerSliderState createState() => _AutoBannerSliderState();
+  AutoBannerSliderState createState() => AutoBannerSliderState();
 }
 
-class _AutoBannerSliderState extends State<AutoBannerSlider> {
+class AutoBannerSliderState extends State<AutoBannerSlider> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 

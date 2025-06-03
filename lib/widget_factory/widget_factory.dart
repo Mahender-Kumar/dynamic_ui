@@ -43,9 +43,9 @@ class WidgetFactory {
         final onTap =
             source.voidHandler(['onTap']) ??
             () {
-              print('clicking on $label');
+              debugPrint('clicking on $label');
             };
-        print('this${source.voidHandler(['onTap'])}');
+        // print('this${source.voidHandler(['onTap'])}');
 
         return CategoryIcon(icon: iconName, label: label, onTap: onTap);
       },
